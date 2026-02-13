@@ -1,8 +1,8 @@
 # Flask Noise Reduction Service
 
-REST API service để nhận file .wav từ ESP32 và trả về audio đã khử tiếng ồn bằng DTLN model.
+REST API service nhận file `.wav` từ ESP32 và trả về audio đã khử tiếng ồn bằng DTLN model.
 
-## 🏗️ Architecture
+## Architecture
 
 Service được thiết kế theo **layered architecture** để dễ dàng tái sử dụng:
 
@@ -12,40 +12,39 @@ noise-reduction-service/
 ├── config.py                 # Configuration management
 ├── api/                      # API Layer (HTTP endpoints)
 │   ├── __init__.py
-│   └── routes.py            # Flask routes/blueprints
+│   └── routes.py             # Flask routes/blueprints
 ├── services/                 # Service Layer (Business logic)
 │   ├── __init__.py
-│   └── noise_reduction.py   # DTLN service (standalone)
+│   └── noise_reduction.py    # DTLN service (standalone)
 ├── models/                   # Model files
-│   └── DTLN_vivos_best.h5   # Trained DTLN model
+│   └── DTLN_vivos_best.h5    # Trained DTLN model
 ├── requirements.txt
 └── README.md
 ```
 
 **Key Benefits:**
-- ✅ **Service layer** có thể import và sử dụng độc lập (không cần Flask)
-- ✅ **API layer** chỉ handle HTTP requests, delegate logic cho service
-- ✅ Dễ test, dễ maintain, dễ scale
-- ✅ Có thể reuse service trong bất kỳ application nào
+- **Service layer** có thể import và sử dụng độc lập (không cần Flask)
+- **API layer** chỉ handle HTTP requests, delegate logic cho service
+- Dễ test, dễ maintain, dễ scale
+- Có thể reuse service trong bất kỳ application nào
 
-## 🚀 Features
+## Features
 
-- ✅ RESTful API endpoint cho audio denoising
-- ✅ **Standalone service** - có thể import và dùng trực tiếp
-- ✅ CORS support cho ESP32 và web clients
-- ✅ Xử lý file .wav lên đến 50MB
-- ✅ Automatic cleanup của temporary files
-- ✅ Health check endpoint
-- ✅ Comprehensive error handling
-- ✅ Logging đầy đủ
+- RESTful API endpoint cho audio denoising
+- Standalone service — có thể import và dùng trực tiếp
+- CORS support cho ESP32 và web clients
+- Xử lý file `.wav` lên đến 50MB
+- Automatic cleanup temporary files
+- Health check endpoint
+- Comprehensive error handling và logging
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8+
 - TensorFlow 2.13+
-- DTLN model (đã được include trong package tại `models/DTLN_vivos_best.h5`)
+- DTLN model (đã include sẵn tại `models/DTLN_vivos_best.h5`)
 
-## 🔧 Installation
+## Installation
 
 1. **Install dependencies:**
    ```bash
@@ -59,11 +58,9 @@ noise-reduction-service/
    # Edit .env để thay đổi cấu hình nếu cần
    ```
 
-3. **Model is ready:**
-   - Model đã được đặt sẵn tại `models/DTLN_vivos_best.h5`
-   - Không cần cấu hình thêm
+3. **Model is ready** — đã đặt sẵn tại `models/DTLN_vivos_best.h5`, không cần cấu hình thêm.
 
-## 🏃 Running the Service
+## Running the Service
 
 ### Development Mode
 
@@ -86,9 +83,9 @@ pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
-### 1. Health Check
+### Health Check
 
 **Endpoint:** `GET /health`
 
@@ -99,23 +96,23 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
   "model_loaded": true,
   "model_info": {
     "status": "loaded",
-    "model_path": "../models_DTLN_vivos/DTLN_vivos_best.h5",
+    "model_path": "models/DTLN_vivos_best.h5",
     "sample_rate": 16000
   }
 }
 ```
 
-### 2. Denoise Audio
+### Denoise Audio
 
 **Endpoint:** `POST /denoise`
 
 **Request:**
 - Method: `POST`
 - Content-Type: `multipart/form-data`
-- Body: Form field `file` chứa .wav file
+- Body: Form field `file` chứa `.wav` file
 
 **Response:**
-- Success (200): Denoised audio file (.wav)
+- Success (200): Denoised audio file (`.wav`)
 - Error (400/413/500): JSON error message
 
 **cURL Example:**
@@ -143,7 +140,7 @@ else:
     print(f"Error: {response.json()}")
 ```
 
-## 🤖 ESP32 Integration
+## ESP32 Integration
 
 ### Arduino/ESP32 Example (HTTP Client)
 
@@ -192,11 +189,11 @@ void uploadAndDenoise(const char* inputFile, const char* outputFile) {
 2. URL: `http://localhost:5000/denoise`
 3. Body > form-data
 4. Key: `file` (type: File)
-5. Value: Select your .wav file
+5. Value: Select your `.wav` file
 6. Send request
-7. Save response as .wav file
+7. Save response as `.wav` file
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -206,7 +203,7 @@ void uploadAndDenoise(const char* inputFile, const char* outputFile) {
 | `FLASK_HOST` | `0.0.0.0` | Server bind address |
 | `FLASK_PORT` | `5000` | Server port |
 | `FLASK_DEBUG` | `True` | Debug mode |
-| `MODEL_PATH` | `../models_DTLN_vivos/DTLN_vivos_best.h5` | Path to model weights |
+| `MODEL_PATH` | `models/DTLN_vivos_best.h5` | Path to model weights |
 | `CORS_ORIGINS` | `*` | Allowed CORS origins |
 | `SECRET_KEY` | `dev-secret-key` | Flask secret key |
 
@@ -216,59 +213,57 @@ void uploadAndDenoise(const char* inputFile, const char* outputFile) {
 - Allowed extensions: `.wav`
 - Sample rate: 16kHz (recommended)
 
-## 📊 Audio Requirements
+## Audio Requirements
 
-- **Format:** WAV
-- **Sample Rate:** 16kHz (recommended, model trained on 16kHz)
-- **Channels:** Mono (stereo will be auto-converted)
-- **Bit Depth:** Any (will be converted to float32)
+| Property | Value |
+|----------|-------|
+| Format | WAV |
+| Sample Rate | 16kHz (recommended, model trained on 16kHz) |
+| Channels | Mono (stereo sẽ tự động convert) |
+| Bit Depth | Any (sẽ convert sang float32) |
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Model not loading
+
 ```
 Error: Model file not found
 ```
-**Solution:** Verify `MODEL_PATH` trong `.env` hoặc `config.py`
+**Solution:** Verify `MODEL_PATH` trong `.env` hoặc `config.py`.
 
 ### Memory errors
+
 ```
 Error: OOM when allocating tensor
 ```
-**Solution:** 
-- Giảm MAX_CONTENT_LENGTH trong config
-- Xử lý files nhỏ hơn
-- Tăng RAM của server
+**Solution:** Giảm `MAX_CONTENT_LENGTH` trong config, xử lý files nhỏ hơn, hoặc tăng RAM server.
 
 ### Sample rate mismatch
+
 ```
 Warning: Audio sample rate doesn't match expected rate
 ```
-**Solution:** Resample audio về 16kHz trước khi upload, hoặc service sẽ xử lý nhưng quality có thể giảm
+**Solution:** Resample audio về 16kHz trước khi upload. Service vẫn xử lý được nhưng quality có thể giảm.
 
-## 📝 Logging
+## Logging
 
-Logs được output ra console với format:
+Logs output ra console với format:
 ```
 2026-02-13 00:08:00 - app - INFO - Processing audio: noisy.wav
 ```
 
-Để save logs ra file:
+Save logs ra file:
 ```bash
 python app.py 2>&1 | tee service.log
 ```
 
-## 🔒 Security Notes
+## Security Notes
 
 - Trong production, set `SECRET_KEY` mạnh và unique
-- Giới hạn CORS origins về specific domains
+- Giới hạn `CORS_ORIGINS` về specific domains
 - Sử dụng HTTPS trong production
-- Rate limiting nên được thêm vào cho production use
+- Nên thêm rate limiting cho production use
 
-## 📄 License
+## License
 
-Same as DTLN project
-
-## 🤝 Support
-
-For issues or questions, liên hệ project maintainer.
+Same as DTLN project.

@@ -1,17 +1,11 @@
 import os
-import sys
 import logging
 import numpy as np
 import soundfile as sf
 import tensorflow as tf
 from pathlib import Path
 
-# Add parent directory to path to import DTLN model
-parent_dir = Path(__file__).parent.parent.parent
-if str(parent_dir) not in sys.path:
-    sys.path.insert(0, str(parent_dir))
-
-from model import DTLN_model
+from services.dtln_model import DTLN_model
 
 logger = logging.getLogger(__name__)
 
